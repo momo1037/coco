@@ -21,7 +21,7 @@ export interface Context extends RawContext {
   body: unknown;
   state: State;
   query: QueryType;
-  cookies: Record<string, string>;
+  cookies: Record<string, string | undefined>;
   setCookie: (...args: Parameters<typeof serialize>) => void;
 }
 
