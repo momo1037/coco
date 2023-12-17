@@ -1,5 +1,14 @@
 import { match } from "path-to-regexp";
-import { Middleware, InnerRoute, Method, Schema, RouteHandler } from "../types";
+
+import {
+  Middleware,
+  InnerRoute,
+  Method,
+  Schema,
+  RouteHandler,
+  QueryType,
+  ParamsType,
+} from "../types";
 
 export class Router {
   routes: InnerRoute[] = [];
@@ -10,11 +19,11 @@ export class Router {
     return ret;
   }
 
-  #add<Body, Query, Params, Headers, Cookies>(
+  #add<Body, Query extends QueryType, Params extends ParamsType>(
     method: Method,
     path: string,
-    schema: Schema<Body, Query, Params, Headers, Cookies>,
-    handler: RouteHandler<Body, Query, Params, Headers, Cookies>
+    schema: Schema<Body, Query, Params>,
+    handler: RouteHandler<Body, Query, Params>
   ) {
     this.routes.push({
       path,
@@ -22,37 +31,37 @@ export class Router {
       schema,
       handler,
       match: match(path),
-    } as unknown as InnerRoute);
+    } as InnerRoute);
   }
 
-  get<Body, Query, Params, Headers, Cookies>(
+  get<Body, Query extends QueryType, Params extends ParamsType>(
     path: string,
-    schema: Schema<Body, Query, Params, Headers, Cookies>,
-    handler: RouteHandler<Body, Query, Params, Headers, Cookies>
+    schema: Schema<Body, Query, Params>,
+    handler: RouteHandler<Body, Query, Params>
   ) {
     this.#add("GET", path, schema, handler);
   }
 
-  post<Body, Query, Params, Headers, Cookies>(
+  post<Body, Query extends QueryType, Params extends ParamsType>(
     path: string,
-    schema: Schema<Body, Query, Params, Headers, Cookies>,
-    handler: RouteHandler<Body, Query, Params, Headers, Cookies>
+    schema: Schema<Body, Query, Params>,
+    handler: RouteHandler<Body, Query, Params>
   ) {
     this.#add("POST", path, schema, handler);
   }
 
-  put<Body, Query, Params, Headers, Cookies>(
+  put<Body, Query extends QueryType, Params extends ParamsType>(
     path: string,
-    schema: Schema<Body, Query, Params, Headers, Cookies>,
-    handler: RouteHandler<Body, Query, Params, Headers, Cookies>
+    schema: Schema<Body, Query, Params>,
+    handler: RouteHandler<Body, Query, Params>
   ) {
     this.#add("PUT", path, schema, handler);
   }
 
-  delete<Body, Query, Params, Headers, Cookies>(
+  delete<Body, Query extends QueryType, Params extends ParamsType>(
     path: string,
-    schema: Schema<Body, Query, Params, Headers, Cookies>,
-    handler: RouteHandler<Body, Query, Params, Headers, Cookies>
+    schema: Schema<Body, Query, Params>,
+    handler: RouteHandler<Body, Query, Params>
   ) {
     this.#add("DELETE", path, schema, handler);
   }
@@ -66,7 +75,7 @@ export class Router {
         if (!matchResult) continue;
 
         const routeCtx = Object.assign(ctx, {
-          params: matchResult.params as Record<string, unknown>,
+          params: matchResult.params as ParamsType,
         });
 
         if (route.schema.body)
@@ -77,12 +86,6 @@ export class Router {
 
         if (route.schema.params)
           routeCtx.params = route.schema.params.parse(routeCtx.params);
-
-        if (route.schema.headers)
-          routeCtx.headers = route.schema.headers.parse(routeCtx.headers);
-
-        if (route.schema.cookies)
-          routeCtx.cookies = route.schema.cookies.parse(routeCtx.cookies);
 
         return route.handler(routeCtx);
       }

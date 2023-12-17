@@ -1,7 +1,9 @@
-import { Context, Middleware, RawContext } from "../types";
 import http, { type IncomingMessage } from "node:http";
-import { Logger } from "./Logger";
+
 import cookie from "cookie";
+
+import { Logger } from "./Logger";
+import { Context, Middleware, RawContext } from "../types";
 import { parseBody } from "../utils/parseBody";
 
 export class App {
@@ -29,8 +31,8 @@ export class App {
     const url = new URL(req.url ?? "", `http://${req.headers.host}`);
     const log = new Logger();
     const body = await parseBody(rep);
+    const state = {};
     const query = Object.fromEntries(url.searchParams);
-    const headers = req.headers;
     const cookies = cookie.parse(req.headers.cookie ?? "");
     const setCookie = (...args: Parameters<typeof cookie.serialize>) => {
       rep.setHeader("Set-Cookie", cookie.serialize(...args));
@@ -40,8 +42,8 @@ export class App {
       url,
       log,
       body,
+      state,
       query,
-      headers,
       cookies,
       setCookie,
     });

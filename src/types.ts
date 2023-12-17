@@ -2,24 +2,26 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import type { Logger } from "./core/Logger";
 import type { MatchFunction } from "path-to-regexp";
 import type { serialize } from "cookie";
-import { ZodSchema, ZodTypeDef } from "zod";
+import type { ZodSchema, ZodTypeDef } from "zod";
+
+export type QueryType = Record<string, unknown>;
+export type ParamsType = Record<string, unknown>;
+
+export interface State {
+  [key: string]: unknown;
+}
 
 export interface RawContext extends ServerResponse {
   req: IncomingMessage;
 }
 
-export interface Context<
-  Body = unknown,
-  Query = Record<string, unknown>,
-  Headers = Record<string, unknown>,
-  Cookies = Record<string, string>
-> extends RawContext {
+export interface Context extends RawContext {
   log: Logger;
   url: URL;
-  body: Body;
-  query: Query;
-  headers: Headers;
-  cookies: Cookies;
+  body: unknown;
+  state: State;
+  query: QueryType;
+  cookies: Record<string, string>;
   setCookie: (...args: Parameters<typeof serialize>) => void;
 }
 
@@ -27,36 +29,45 @@ export type Middleware = (ctx: Context, next: () => Promise<void>) => unknown;
 
 export type Method = "GET" | "POST" | "PUT" | "DELETE";
 
-export interface Schema<Body, Query, Params, Headers, Cookies> {
+export interface Schema<Body, Query, Params> {
   body?: ZodSchema<Body, ZodTypeDef, any>;
   query?: ZodSchema<Query, ZodTypeDef, any>;
   params?: ZodSchema<Params, ZodTypeDef, any>;
-  headers?: ZodSchema<Headers, ZodTypeDef, any>;
-  cookies?: ZodSchema<Cookies, ZodTypeDef, any>;
 }
 
-export interface RouteContext<Body, Query, Params, Headers, Cookies>
-  extends Context<Body, Query, Headers, Cookies> {
+export interface RouteContext<
+  Body,
+  Query extends QueryType,
+  Params extends ParamsType
+> extends Context {
+  body: Body;
+  query: Query;
   params: Params;
 }
 
-export interface RouteHandler<Body, Query, Params, Headers, Cookies> {
-  (ctx: RouteContext<Body, Query, Params, Headers, Cookies>): unknown;
+export interface RouteHandler<
+  Body,
+  Query extends QueryType,
+  Params extends ParamsType
+> {
+  (ctx: RouteContext<Body, Query, Params>): unknown;
 }
 
-export interface Route<Body, Query, Params, Headers, Cookies> {
+export interface Route<
+  Body,
+  Query extends QueryType,
+  Params extends ParamsType
+> {
   method: Method;
   path: string;
-  schema: Schema<Body, Query, Params, Headers, Cookies>;
-  handler: RouteHandler<Body, Query, Params, Headers, Cookies>;
+  schema: Schema<Body, Query, Params>;
+  handler: RouteHandler<Body, Query, Params>;
 }
 
 export interface InnerRoute<
   Body = unknown,
-  Query = Record<string, unknown>,
-  Params = Record<string, unknown>,
-  Headers = Record<string, unknown>,
-  Cookies = Record<string, string>
-> extends Route<Body, Query, Params, Headers, Cookies> {
+  Query extends QueryType = QueryType,
+  Params extends ParamsType = ParamsType
+> extends Route<Body, Query, Params> {
   match: MatchFunction;
 }
