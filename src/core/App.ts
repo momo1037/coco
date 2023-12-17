@@ -1,10 +1,10 @@
-import http, { type IncomingMessage } from "node:http";
-
-import cookie from "cookie";
+import http from "node:http";
 
 import { Logger } from "./Logger";
-import { Context, Middleware, RawContext } from "../types";
-import { parseBody } from "../utils/parseBody";
+import { parseRawContext } from "../utils/parseRawContext";
+import { compose } from "../utils/compose";
+
+import type { Middleware, RawContext } from "../types";
 
 export class App {
   log = new Logger();
@@ -16,42 +16,12 @@ export class App {
     this.middleware.push(middleware);
   }
 
-  async compose(ctx: Context): Promise<unknown> {
-    let ret: unknown;
-    const dispatch = async (i: number) => {
-      const fn = this.middleware[i];
-      const res = await fn(ctx, dispatch.bind(this, i + 1));
-      if (i === this.middleware.length - 1) ret = res;
-    };
-    await dispatch(0);
-    return ret;
-  }
-
-  async listener(req: IncomingMessage, rep: RawContext) {
-    const url = new URL(req.url ?? "", `http://${req.headers.host}`);
-    const log = new Logger();
-    const body = await parseBody(rep);
-    const state = {};
-    const query = Object.fromEntries(url.searchParams);
-    const cookies = cookie.parse(req.headers.cookie ?? "");
-    const setCookie = (...args: Parameters<typeof cookie.serialize>) => {
-      rep.setHeader("Set-Cookie", cookie.serialize(...args));
-    };
-
-    const ctx: Context = Object.assign(rep, {
-      url,
-      log,
-      body,
-      state,
-      query,
-      cookies,
-      setCookie,
-    });
-
+  async listener(_: unknown, rep: RawContext) {
     let res: unknown;
 
     try {
-      res = await this.compose(ctx);
+      const ctx = await parseRawContext(rep);
+      res = await compose(this.middleware)(ctx);
     } catch (error) {
       rep.statusCode = 500;
       rep.setHeader("Content-Type", "application/json");
@@ -59,14 +29,10 @@ export class App {
       return;
     }
 
-    if (res && typeof res === "object") {
+    if (res?.constructor === Object) {
       rep.setHeader("Content-Type", "application/json");
       rep.end(JSON.stringify(res));
       return;
-    }
-
-    if (!rep.getHeader("Content-Type")) {
-      rep.setHeader("Content-Type", "text/plain");
     }
 
     rep.end(res);

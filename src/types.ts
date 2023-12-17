@@ -25,7 +25,9 @@ export interface Context extends RawContext {
   setCookie: (...args: Parameters<typeof serialize>) => void;
 }
 
-export type Middleware = (ctx: Context, next: () => Promise<void>) => unknown;
+export interface Middleware {
+  (ctx: Context, next: () => Promise<void>): unknown;
+}
 
 export type Method = "GET" | "POST" | "PUT" | "DELETE";
 

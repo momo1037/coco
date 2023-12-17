@@ -1,6 +1,6 @@
 {
   "name": "@w72/coco",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Koa & fastify alternative",
   "exports": "./src/mod.ts",
   "scripts": {},
