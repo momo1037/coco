@@ -1,3 +1,7 @@
+# coco
+
+koa & fastify alternative
+
 ```typescript
 import { App, Router } from "@w72/coco";
 import { z } from "zod";
@@ -5,6 +9,15 @@ import { z } from "zod";
 const app = new App();
 
 const router = new Router();
+
+router.get(
+  "/",
+  {
+    query: z.object({ test: z.optional(z.string()) }),
+  },
+  (ctx) => ({ hello: `hello ${ctx.query.test}` })
+);
+
 router.get(
   "/test/:id",
   {
