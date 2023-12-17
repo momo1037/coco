@@ -1,5 +1,5 @@
 ```typescript
-import { App, Router } from "coco";
+import { App, Router } from "@w72/coco";
 import { z } from "zod";
 
 const app = new App();
