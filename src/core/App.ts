@@ -63,7 +63,10 @@ export class App {
       return;
     }
 
-    rep.setHeader("Content-Type", "text/plain");
+    if (!rep.getHeader("Content-Type")) {
+      rep.setHeader("Content-Type", "text/plain");
+    }
+
     rep.end(res);
   }
 }

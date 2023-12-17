@@ -10,7 +10,7 @@ export class Router {
     return ret;
   }
 
-  addByMethod<Body, Query, Params, Headers, Cookies>(
+  #add<Body, Query, Params, Headers, Cookies>(
     method: Method,
     path: string,
     schema: Schema<Body, Query, Params, Headers, Cookies>,
@@ -30,7 +30,7 @@ export class Router {
     schema: Schema<Body, Query, Params, Headers, Cookies>,
     handler: RouteHandler<Body, Query, Params, Headers, Cookies>
   ) {
-    this.addByMethod("GET", path, schema, handler);
+    this.#add("GET", path, schema, handler);
   }
 
   post<Body, Query, Params, Headers, Cookies>(
@@ -38,7 +38,7 @@ export class Router {
     schema: Schema<Body, Query, Params, Headers, Cookies>,
     handler: RouteHandler<Body, Query, Params, Headers, Cookies>
   ) {
-    this.addByMethod("POST", path, schema, handler);
+    this.#add("POST", path, schema, handler);
   }
 
   put<Body, Query, Params, Headers, Cookies>(
@@ -46,7 +46,7 @@ export class Router {
     schema: Schema<Body, Query, Params, Headers, Cookies>,
     handler: RouteHandler<Body, Query, Params, Headers, Cookies>
   ) {
-    this.addByMethod("PUT", path, schema, handler);
+    this.#add("PUT", path, schema, handler);
   }
 
   delete<Body, Query, Params, Headers, Cookies>(
@@ -54,7 +54,7 @@ export class Router {
     schema: Schema<Body, Query, Params, Headers, Cookies>,
     handler: RouteHandler<Body, Query, Params, Headers, Cookies>
   ) {
-    this.addByMethod("DELETE", path, schema, handler);
+    this.#add("DELETE", path, schema, handler);
   }
 
   middleware(): Middleware {
