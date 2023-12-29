@@ -3,7 +3,10 @@
   "version": "1.0.4",
   "description": "Koa & fastify alternative",
   "exports": "./src/mod.ts",
-  "scripts": {},
+  "scripts": {
+    "test": "vitest",
+    "test:cov": "vitest run --coverage"
+  },
   "keywords": [],
   "author": "w72e@qq.com",
   "repository": "github:w72/coco",
@@ -17,6 +20,9 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/node": "^18.19.3"
+    "@types/node": "^20.10.5",
+    "@vitest/coverage-v8": "^1.1.0",
+    "@w72/lodash": "^1.0.0",
+    "vitest": "^1.1.0"
   }
 }
