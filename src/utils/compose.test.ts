@@ -1,11 +1,11 @@
-import { test, expect } from "vitest";
+import { it, expect } from "vitest";
 
 import { sleep } from "@w72/lodash";
 
 import { compose } from "./compose";
 import type { Context, Middleware } from "../types";
 
-test("should work", async () => {
+it("should work", async () => {
   const middleware1: Middleware = async (_, next) => {
     await sleep(1);
     await next();

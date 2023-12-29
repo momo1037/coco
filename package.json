@@ -5,7 +5,7 @@
   "exports": "./src/mod.ts",
   "scripts": {
     "test": "vitest",
-    "test:cov": "vitest run --coverage"
+    "test:cov": "vitest run --coverage.enabled"
   },
   "keywords": [],
   "author": "w72e@qq.com",
