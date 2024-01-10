@@ -1,7 +1,7 @@
 import http from "node:http";
 
 import { Logger } from "./Logger";
-import { parseRawContext } from "../utils/parseRawContext";
+import { initContext } from "../utils/initContext";
 import { compose } from "../utils/compose";
 
 import type { Middleware, RawContext } from "../types";
@@ -20,7 +20,7 @@ export class App {
     let res: unknown;
 
     try {
-      const ctx = await parseRawContext(rep);
+      const ctx = await initContext(rep);
       res = await compose(this.middleware)(ctx);
     } catch (error) {
       rep.statusCode = 500;

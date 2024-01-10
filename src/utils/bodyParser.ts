@@ -1,6 +1,6 @@
 import { RawContext } from "../types";
 
-export async function parseBody(ctx: RawContext): Promise<unknown> {
+export async function bodyParser(ctx: RawContext): Promise<unknown> {
   const buf = await new Promise<Buffer>((resolve, reject) => {
     let body: Buffer[] = [];
     ctx.req
