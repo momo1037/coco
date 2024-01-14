@@ -22,48 +22,94 @@ export class Router {
   #add<Body, Query extends QueryType, Params extends ParamsType>(
     method: Method,
     path: string,
-    schema: Schema<Body, Query, Params>,
-    handler: RouteHandler<Body, Query, Params>
+    schemaOrHandler:
+      | RouteHandler<Body, Query, Params>
+      | Schema<Body, Query, Params>,
+    handler?: RouteHandler<Body, Query, Params>
   ) {
     this.routes.push({
       path,
       method,
-      schema,
-      handler,
+      schema: handler ? schemaOrHandler : {},
+      handler: handler ?? schemaOrHandler,
       match: match(path),
     } as InnerRoute);
   }
 
   get<Body, Query extends QueryType, Params extends ParamsType>(
     path: string,
+    handler: RouteHandler<Body, Query, Params>
+  ): void;
+  get<Body, Query extends QueryType, Params extends ParamsType>(
+    path: string,
     schema: Schema<Body, Query, Params>,
     handler: RouteHandler<Body, Query, Params>
-  ) {
-    this.#add("GET", path, schema, handler);
+  ): void;
+  get<Body, Query extends QueryType, Params extends ParamsType>(
+    path: string,
+    schemaOrHandler:
+      | RouteHandler<Body, Query, Params>
+      | Schema<Body, Query, Params>,
+    handler?: RouteHandler<Body, Query, Params>
+  ): void {
+    this.#add("GET", path, schemaOrHandler, handler);
   }
 
   post<Body, Query extends QueryType, Params extends ParamsType>(
     path: string,
+    handler: RouteHandler<Body, Query, Params>
+  ): void;
+  post<Body, Query extends QueryType, Params extends ParamsType>(
+    path: string,
     schema: Schema<Body, Query, Params>,
     handler: RouteHandler<Body, Query, Params>
-  ) {
-    this.#add("POST", path, schema, handler);
+  ): void;
+  post<Body, Query extends QueryType, Params extends ParamsType>(
+    path: string,
+    schemaOrHandler:
+      | RouteHandler<Body, Query, Params>
+      | Schema<Body, Query, Params>,
+    handler?: RouteHandler<Body, Query, Params>
+  ): void {
+    this.#add("POST", path, schemaOrHandler, handler);
   }
 
   put<Body, Query extends QueryType, Params extends ParamsType>(
     path: string,
+    handler: RouteHandler<Body, Query, Params>
+  ): void;
+  put<Body, Query extends QueryType, Params extends ParamsType>(
+    path: string,
     schema: Schema<Body, Query, Params>,
     handler: RouteHandler<Body, Query, Params>
-  ) {
-    this.#add("PUT", path, schema, handler);
+  ): void;
+  put<Body, Query extends QueryType, Params extends ParamsType>(
+    path: string,
+    schemaOrHandler:
+      | RouteHandler<Body, Query, Params>
+      | Schema<Body, Query, Params>,
+    handler?: RouteHandler<Body, Query, Params>
+  ): void {
+    this.#add("PUT", path, schemaOrHandler, handler);
   }
 
   delete<Body, Query extends QueryType, Params extends ParamsType>(
     path: string,
+    handler: RouteHandler<Body, Query, Params>
+  ): void;
+  delete<Body, Query extends QueryType, Params extends ParamsType>(
+    path: string,
     schema: Schema<Body, Query, Params>,
     handler: RouteHandler<Body, Query, Params>
-  ) {
-    this.#add("DELETE", path, schema, handler);
+  ): void;
+  delete<Body, Query extends QueryType, Params extends ParamsType>(
+    path: string,
+    schemaOrHandler:
+      | RouteHandler<Body, Query, Params>
+      | Schema<Body, Query, Params>,
+    handler?: RouteHandler<Body, Query, Params>
+  ): void {
+    this.#add("DELETE", path, schemaOrHandler, handler);
   }
 
   middleware(): Middleware {
