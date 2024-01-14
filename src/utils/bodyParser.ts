@@ -19,9 +19,5 @@ export async function bodyParser(ctx: RawContext): Promise<unknown> {
     return JSON.parse(buf.toString());
   }
 
-  if (ctx.req.headers["content-type"] === "text/plain") {
-    return buf.toString();
-  }
-
   return buf;
 }
